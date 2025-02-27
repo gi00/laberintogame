@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laberinto del Aniversario</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f9d8e2;
+      font-family: Arial, sans-serif;
+    }
+    #game {
+      position: relative;
+      width: 90vw;
+      height: 90vw;
+      max-width: 400px;
+      max-height: 400px;
+      background-color: #fff;
+      border: 2px solid #ff6b6b;
+    }
+    .cell {
+      width: 10%;
+      height: 10%;
+      position: absolute;
+      box-sizing: border-box;
+    }
+    .wall {
+      background-color: #ff6b6b;
+    }
+    .player {
+      background-image: url('https://img.icons8.com/ios-filled/50/000000/car--v1.png');
+      background-size: cover;
+    }
+    .end {
+      background-image: url('https://img.icons8.com/ios-filled/50/000000/checkered-flag.png');
+      background-size: cover;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #ff6b6b;
+      text-align: center;
+    }
+    #controls {
+      display: grid;
+      grid-template-areas:
+        ". up ."
+        "left down right";
+      gap: 10px;
+      margin-top: 20px;
+    }
+    #controls button {
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    #controls button:hover {
+      background-color: #ff4c4c;
+    }
+    #up {
+      grid-area: up;
+    }
+    #left {
+      grid-area: left;
+    }
+    #down {
+      grid-area: down;
+    }
+    #right {
+      grid-area: right;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id="game"></div>
+    <div id="message"></div>
+    <div id="controls">
+      <button id="up">⬆️</button>
+      <button id="left">⬅️</button>
+      <button id="down">⬇️</button>
+      <button id="right">➡️</button>
+    </div>
+  </div>
+
+  <script>
+    const game = document.getElementById("game");
+    const message = document.getElementById("message");
+
+    const maze = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+  [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+  [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+  [1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+  [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 2, 1],
+];
+
+    let playerPosition = { x: 1, y: 1 };
+
+    function drawMaze() {
+      game.innerHTML = "";
+      for (let y = 0; y < maze.length; y++) {
+        for (let x = 0; x < maze[y].length; x++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.style.left = `${x * 10}%`;
+          cell.style.top = `${y * 10}%`;
+
+          if (maze[y][x] === 1) {
+            cell.classList.add("wall");
+          } else if (maze[y][x] === 2) {
+            cell.classList.add("end");
+          }
+
+          if (x === playerPosition.x && y === playerPosition.y) {
+            const player = document.createElement("div");
+            player.className = "cell player";
+            player.style.left = `${x * 10}%`;
+            player.style.top = `${y * 10}%`;
+            game.appendChild(player);
+          }
+
+          game.appendChild(cell);
+        }
+      }
+    }
+
+    function movePlayer(dx, dy) {
+      const newX = playerPosition.x + dx;
+      const newY = playerPosition.y + dy;
+
+      if (maze[newY][newX] !== 1) {
+        playerPosition.x = newX;
+        playerPosition.y = newY;
+        drawMaze();
+
+        if (maze[newY][newX] === 2) {
+          message.textContent = "¡Feliz aniversario, amor! ❤️";
+        }
+      }
+    }
+
+    // Controles de teclado
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") movePlayer(0, -1);
+      if (e.key === "ArrowDown") movePlayer(0, 1);
+      if (e.key === "ArrowLeft") movePlayer(-1, 0);
+      if (e.key === "ArrowRight") movePlayer(1, 0);
+    });
+
+    // Controles táctiles
+    document.getElementById("up").addEventListener("click", () => movePlayer(0, -1));
+    document.getElementById("left").addEventListener("click", () => movePlayer(-1, 0));
+    document.getElementById("down").addEventListener("click", () => movePlayer(0, 1));
+    document.getElementById("right").addEventListener("click", () => movePlayer(1, 0));
+
+    drawMaze();
+  </script>
+</body>
+</html>
